@@ -12,12 +12,13 @@
         <title>JSP Page</title>
     </head>
     <body>
-         <%String username = request.getParameter("username");%>
-        
-         
-         
+       <%String username = (String)session.getAttribute("username");%>
+       
+         sdfsdfsdfds
          <h1>Hello <%= username  %>! FROM the Control</h1>
         
-        
+         <script>
+             alert("You are now on hello.jsp");
+         </script>
     </body>
 </html>

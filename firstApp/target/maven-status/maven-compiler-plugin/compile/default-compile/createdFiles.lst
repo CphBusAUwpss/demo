@@ -1,2 +1,5 @@
 logic/Person.class
-servlets/FrontControl.class
+data/DataMapper.class
+data/DB.class
+logic/User.class
+presentation/FrontControl.class

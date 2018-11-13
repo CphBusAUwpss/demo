@@ -2,4 +2,4 @@
 /home/thomas/projects/javaProjects/demo/firstApp/src/main/java/data/DB.java
 /home/thomas/projects/javaProjects/demo/firstApp/src/main/java/data/DataMapper.java
 /home/thomas/projects/javaProjects/demo/firstApp/src/main/java/logic/User.java
-/home/thomas/projects/javaProjects/demo/firstApp/src/main/java/servlets/FrontControl.java
+/home/thomas/projects/javaProjects/demo/firstApp/src/main/java/presentation/FrontControl.java

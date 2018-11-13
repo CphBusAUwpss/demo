@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servlets;
+package presentation;
 
 import data.DataMapper;
 import java.io.IOException;
@@ -42,16 +42,23 @@ public class FrontControl extends HttpServlet {
         String origin = request.getParameter("origin");
         switch (origin) {
             case "register": //Vi kom fra register.jsp
-                register(request, response);
+//                register(request, response);
                 break;
             case "login": //Vi kom fra login.jsp
-                if(login(request, response))
-                    
-                    request.getRequestDispatcher("hello.jsp").forward(request, response);
+                
+//                request.getRequestDispatcher("hello.jsp").forward(request, response);
+               login(request, response);
                 break;
             case "showAllUsers": //kør denne servlet med: /FrontControl?origin=showAllUsers
-                request.setAttribute("allusers", dm.getAllUsers()); //data mapper klassen bruges til at køre getAllUsers() som returnerer en liste af users som sættes fast på request objektet og sendes til viewet: showusers.jsp
+                //formålet med denne side er nu at vi kun kan se den hvis vi er logget ind og username er lagt på sessionen.
+                Object username =  request.getSession().getAttribute("username");
+                if(username != null){
+                    request.setAttribute("allusers", dm.getAllUsers()); //data mapper klassen bruges til at køre getAllUsers() som returnerer en liste af users som sættes fast på request objektet og sendes til viewet: showusers.jsp
                     request.getRequestDispatcher("showusers.jsp").forward(request, response);
+                } else {
+                    request.getSession().setAttribute("page2view", "showAllUsers.jsp");
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                }
                 break;
             case "multiselect": //Vi kom fra multiselect.jsp
                 String[] languages = request.getParameterValues("language");
@@ -67,20 +74,35 @@ public class FrontControl extends HttpServlet {
                 throw new AssertionError();
         }
     }
-    private void register(HttpServletRequest request, HttpServletResponse response){
+//    private void register(HttpServletRequest request, HttpServletResponse response){
+//        String username = request.getParameter("username");
+//        String password = request.getParameter("password");
+//        System.out.println("");
+//        if(username != null && username.length() > 2){
+//            Person person = new Person(username,password);
+//            persons.add(person); //vi smider den nye person op i listen i linje 26.
+//        } else {
+//            
+//        }
+//    }
+    private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        Person person = new Person(username,password);
-        persons.add(person); //vi smider den nye person op i listen i linje 26.
-    }
-    private boolean login(HttpServletRequest request, HttpServletResponse response){
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        for (Person person : persons) { //gennemløber alle personer
-            if(person.getUsername().equals(username)) //finder person med rigtig username
-                return person.getPassword().equals(password); //returnere sandt eller falsk afhængig af om password passer.
+        System.out.println(username + ":"+ password);
+//        validateUser returnerer true hvis useren findes med det givne password
+        if( dm.validateUser(username, password)){
+            String page = (String) request.getSession().getAttribute("page2view");
+            request.getSession().setAttribute("username", username);
+//            page kommer her fra sessionen hvis brugeren skal sendes tilbage til en given ressource efter at være logget ind (fordi man kan blive sendt til login siden hvis man forsøgte at tilgå eksempelvis showUsers.jsp siden uden at være logget ind.).
+            if(page!=null){
+                request.getRequestDispatcher(page).forward(request, response);
+            } else {
+                request.getRequestDispatcher("hello.jsp").forward(request, response); //gå til hello.jsp hvis login var rigtig
+            }
+        } else {
+            request.setAttribute("error", "Forkert brugernavn eller password. Prøv igen."); //hvis login var forkert går vi til loginsiden med en error besked.
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
-        return false;
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
